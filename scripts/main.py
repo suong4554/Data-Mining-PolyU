@@ -1,112 +1,47 @@
+from sklearn.linear_model import LinearRegression
 import os
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import preprocessing
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.impute import SimpleImputer
-import numpy as np
-
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import accuracy_score
+
+
+import linearAlgo
+import logAlgo
+import kncAlgo
+import svmAlgo as svm
+import neuralAlgo as nA
+import gausClassAlgo as gca
+import decTreeAlgo as dta
+import discrimAnalAlgo as daa
+import naiveBayAlgo as nba
+
+#%matplotlib inline
 
 
 
-# display result accuracy of learning procedure:
-def display_accuracy(y_prediction, test_y, display_message):
-    print("Accuracy_Score of " + display_message + " " + str(accuracy_score(y_prediction, test_y.tolist())))
-
-
-
-def encodeSingleColumn(train_x, test_x):
-    #Selects the Column
-    hs_train = train_x[['HouseStyle']].copy()
-    hs_test = test_x[['HouseStyle']].copy()
-    
-    #hs_train = train_x
-    #hs_test = test_x
-    
-    
-    ohe = OneHotEncoder(sparse=False, handle_unknown='ignore')
-    
-    
-    #Fill in missing values (nan)
-    si = SimpleImputer(strategy='constant', fill_value='MISSING')
-    hs_train = si.fit_transform(hs_train)
-    hs_test = si.fit_transform(hs_test)
-    
-    
-    #Transforms the data
-    hs_train_transformed = ohe.fit_transform(hs_train)
-    hs_test_transformed = ohe.transform(hs_test)
-    
-    print(hs_train_transformed)
-    #row0 = hs_train_transformed[0]
-    
-    
-    #fill, transforms
-    #inverse_transform([row0])
-    #print(ohe.inverse_transform([row0]))
-
-    #ohe = OneHotEncoder(spare=False)
-    
-    """
-    for x, column in train_x.iterrows():
-        le.fit(column)
-        trainX[x] = le.transform(column)
-        print(trainX[x])
-    """
-
-#https://medium.com/dunder-data/from-pandas-to-scikit-learn-a-new-exciting-workflow-e88e2271ef62
-def encodeColumns(train, test):
-    from sklearn.compose import ColumnTransformer 
-    from sklearn.pipeline import Pipeline
-    
-    
-    kinds = np.array([dt.kind for dt in train.dtypes])
-    all_columns = train.columns.values
-    is_num = kinds != 'O'
-    num_cols = all_columns[is_num]
-    cat_cols = all_columns[~is_num]
-    
-    
-    
-    cat_si_step = ('si', SimpleImputer(strategy='constant', fill_value='MISSING'))
-    cat_ohe_step = ('ohe', OneHotEncoder(sparse=False, handle_unknown='ignore'))    
-    cat_steps = [cat_si_step, cat_ohe_step]
-    cat_pipe = Pipeline(cat_steps)
-    cat_transformers = [('cat', cat_pipe, cat_cols)]
-    ct = ColumnTransformer(transformers=cat_transformers)
-    
-    
-    from sklearn.preprocessing import StandardScaler
-    
-
-    
-    num_si_step = ('si', SimpleImputer(strategy='median'))
-    num_ss_step = ('ss', StandardScaler())
-    num_steps = [num_si_step, num_ss_step]    
-    num_pipe = Pipeline(num_steps)
-    num_transformers = [('num', num_pipe, num_cols)]
-    
-    transformers = [('cat', cat_pipe, cat_cols),
-                    ('num', num_pipe, num_cols)]
-    
-    
-    ct = ColumnTransformer(transformers=transformers)
-    dataWholeTrain = ct.fit_transform(train)
-    dataWholeTest = ct.transform(test)
-    whole = [dataWholeTrain, dataWholeTest]
-    return whole
+def visualize(test_y, pred_y, title):
+    plt.scatter(test_y, pred_y)
+    plt.xlabel("Prices: $Y_i$")
+    plt.ylabel("Predicted prices: $\hat{Y}_i$")
+    plt.title(title)
+    plt.show()
 
 
 
 def train(train_x, target_y):
     
-    le = preprocessing.LabelEncoder()
-    for x, column in train_x.iterrows():
-        #print(column)
-        break
+    #le = preprocessing.LabelEncoder()
+    for column in train_x:
+        #le.fit(train_x[column])
+        #train_x[column] = le.transform(train_x[column])
+        train_x[column] = pd.Categorical(train_x[column])
+   
+    #header = train_x.columns
+    #train_x = pd.get_dummies(data=header)
+    
+    print(train_x)
         
     lm = LinearRegression()
     lm.fit(train_x, target_y)
@@ -120,68 +55,134 @@ def load_df(dir_path, file_name):
     data = pd.read_csv(file)
     return data
 
-
+def encodeArr(train_df):
+    for i in train_df:
+        #Casting type to category for efficiency
+        train_df[i] = train_df[i].fillna(train_df[i]).astype('category')
+        #Built in python to convert each value in a column to a number
+        train_df[i] = train_df[i].cat.codes
+    return train_df
 
 
 ##########################################################################################
 #####################################DATA PREPROCESSING###################################
+#Website for encoding data: https://www.datacamp.com/community/tutorials/categorical-data
 # load the training data frame:
 home_dir = os.path.dirname(os.path.realpath(__file__)).replace("scripts", "")
 train_df = load_df(home_dir, "train.csv")
 
-# create the training set: (without "SalePrice" and "Id" column)
+#Encodes the dataframe to ints
+train_df = encodeArr(train_df)
+
+
+# create the training set: (without "target" and "Id" column)
 train_x = train_df.drop("SalePrice", axis=1).drop("Id", axis=1)
 target_y = train_df["SalePrice"]
 
-
-
+#Split up the dataset for testing and training purposes
 train_x, test_x, train_y, test_y = train_test_split(train_x, target_y, test_size = 0.33, random_state = 5)
+
+
+
+
+##########################################################################################
+#####################################Applying ML Algo###################################
+
+
+predictions = []
+titles = []
+
+
+################## apply Linear Regression: #####################
+y_prediction = linearAlgo.apply_linear_regression(train_x, train_y, test_x)
+predictions.append(y_prediction)
+titles.append("Linear Regression")
+#visualize(test_y, y_prediction, "Linear Regression")
+
+####################################################################################
+
+################## apply Logistic Regression:##################
+y_prediction = logAlgo.apply_logistic_regression(train_x, train_y, test_x)
+predictions.append(y_prediction)
+titles.append("Logistic Regression")
+#visualize(test_y, y_prediction, "Logistic Regression")
+
+####################################################################################
+####################################################################################
+
+################## apply Neural Network MLP Classifier##################
+y_prediction = nA.apply_MLPClassifier(train_x, train_y, test_x)
+predictions.append(y_prediction)
+titles.append("Neural Network MLP Classifier")
+#visualize(test_y, y_prediction, "Neural Network MLP Classifier")
+####################################################################################
+
+################## apply Naive Bayes GaussianNB##################
+y_prediction = nba.apply_naive(train_x, train_y, test_x)
+predictions.append(y_prediction)
+titles.append("Naive Bayes GaussianNB")
+#visualize(test_y, y_prediction, "Naive Bayes GaussianNB")
+
+#Apply Linear and Quadratic Discrimination Analysis
+solvers = ["svd", "lsqr", "eigen"]
+#Eigen does not work
+#apply linear
+y_prediction = daa.apply_linear_disc(train_x, train_y, test_x, "svd")
+predictions.append(y_prediction)
+titles.append("Linear Discrimination Analysis: svd")
+#visualize(test_y, y_prediction, "Linear Discrimination Analysis: svd")
+
+y_prediction = daa.apply_linear_disc(train_x, train_y, test_x, "lsqr")
+predictions.append(y_prediction)
+titles.append("Linear Discrimination Analysis: lsqr")
+#visualize(test_y, y_prediction, "Linear Discrimination Analysis: lsqr")
+
 """
-size = len(train_x)
-
-# take "test_amount" examples for testing:
-test_amount = int(size*.25)
-print(test_amount)
-test_x = train_x.tail(test_amount)
-test_y = target_y.tail(test_amount)
-
-# the "250-test_amount" are used for training:
-train_y = target_y.head(size - test_amount)
-train_x = train_x.head(size - test_amount)
-
+#apply quadratic
+#No solvers for quadratic discrimination
+y_prediction = daa.apply_quad_disc(train_x, train_y, test_x)
+predictions.append(y_prediction)
+titles.append("Quadratic Discrimination Analysis: lsqr")
+#visualize(test_y, y_prediction, "Quadratic Discrimination Analysis: lsqr")
 """
-"""
-#load the testing DataFrame:
-train_df = load_df(home_dir, "test.csv")
-
-#create the testing set: (without "id" column)
-test_x = train_df.drop("Id", axis=1)
-"""
-
-data = encodeColumns(train_x, test_x)
-train_x_encoded = data[0]
-test_x_encoded = data[1]
-
-print(train_x_encoded.shape)
-print(test_x_encoded.shape)
-print(train_y.shape)
-
-lm = LinearRegression()
-lm.fit(train_x_encoded, train_y)
+####################################################################################
 
 
+##################apply Gaussian Process Classifier##################
+y_prediction = gca.apply_gaus(train_x, train_y, test_x)
+predictions.append(y_prediction)
+titles.append("Gaussian Process Classifier")
+#visualize(test_y, y_prediction, "Gaussian Process Classifier")
+
+####################################################################################
+
+###################apply Decision Tree Classifier##################
+y_prediction = dta.apply_tree(train_x, train_y, test_x)
+predictions.append(y_prediction)
+titles.append("Decision Tree Classifier")
+#visualize(test_y, y_prediction, "Decision Tree Classifier")
+
+####################################################################################
+
+################## apply k-Nearest-Neighbors Algorithm:##################
+size_k = 3
+y_prediction = kncAlgo.apply_logistic_regression(train_x, train_y, test_x, size_k)
+predictions.append(y_prediction)
+titles.append("k-Nearest-Neighbors Algorithm: k=3")
+#visualize(test_y, y_prediction, "k-Nearest-Neighbors Algorithm: k=3")
+
+size_k = 1
+y_prediction = kncAlgo.apply_logistic_regression(train_x, train_y, test_x, size_k)
+predictions.append(y_prediction)
+titles.append("k-Nearest-Neighbors Algorithm: k=1")
+#visualize(test_y, y_prediction, "k-Nearest-Neighbors Algorithm: k=1")
 
 
-y_prediction = lm.predict(test_x_encoded)
+####################################################################################
 
 
-
-
-plt.scatter(test_y, y_prediction)
-plt.xlabel("Prices: $Y_i$")
-plt.ylabel("Predicted prices: $\hat{Y}_i$")
-plt.title("Prices vs Predicted prices: $Y_i$ vs $\hat{Y}_i$")
-plt.show()
+for i in range(len(predictions)):
+    visualize(test_y, predictions[i], titles[i])
 
 
 
