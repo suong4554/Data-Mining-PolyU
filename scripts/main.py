@@ -16,10 +16,9 @@ import gausClassAlgo as gca
 import decTreeAlgo as dta
 import discrimAnalAlgo as daa
 import naiveBayAlgo as nba
+import randomForestAlgo as rfa
 
 #%matplotlib inline
-
-
 
 def visualize(test_y, pred_y, title):
     plt.scatter(test_y, pred_y)
@@ -28,26 +27,22 @@ def visualize(test_y, pred_y, title):
     plt.title(title)
     plt.show()
 
-
-
 def train(train_x, target_y):
-    
+
     #le = preprocessing.LabelEncoder()
     for column in train_x:
         #le.fit(train_x[column])
         #train_x[column] = le.transform(train_x[column])
         train_x[column] = pd.Categorical(train_x[column])
-   
+
     #header = train_x.columns
     #train_x = pd.get_dummies(data=header)
-    
+
     print(train_x)
-        
+
     lm = LinearRegression()
     lm.fit(train_x, target_y)
     return lm
-
-
 
 # returns the data from the Exel table:
 def load_df(dir_path, file_name):
@@ -62,7 +57,6 @@ def encodeArr(train_df):
         #Built in python to convert each value in a column to a number
         train_df[i] = train_df[i].cat.codes
     return train_df
-
 
 ##########################################################################################
 #####################################DATA PREPROCESSING###################################
@@ -83,9 +77,7 @@ target_y = train_df["SalePrice"]
 train_x, test_x, train_y, test_y = train_test_split(train_x, target_y, test_size = 0.33, random_state = 5)
 
 
-
-
-##########################################################################################
+########################################################################################
 #####################################Applying ML Algo###################################
 
 
@@ -97,31 +89,39 @@ titles = []
 y_prediction = linearAlgo.apply_linear_regression(train_x, train_y, test_x)
 predictions.append(y_prediction)
 titles.append("Linear Regression")
-#visualize(test_y, y_prediction, "Linear Regression")
-
+visualize(test_y, y_prediction, "Linear Regression")
 ####################################################################################
+
+
+################## apply SVM Regression: #####################
+y_prediction = svm.apply_svr(train_x, train_y, test_x)
+predictions.append(y_prediction)
+titles.append("SVM Regression")
+visualize(test_y, y_prediction, "SVM Regression")
+####################################################################################
+
 
 ################## apply Logistic Regression:##################
-y_prediction = logAlgo.apply_logistic_regression(train_x, train_y, test_x)
-predictions.append(y_prediction)
-titles.append("Logistic Regression")
+#y_prediction = logAlgo.apply_logistic_regression(train_x, train_y, test_x)
+#predictions.append(y_prediction)
+#titles.append("Logistic Regression")
 #visualize(test_y, y_prediction, "Logistic Regression")
+####################################################################################
 
-####################################################################################
-####################################################################################
 
 ################## apply Neural Network MLP Classifier##################
-y_prediction = nA.apply_MLPClassifier(train_x, train_y, test_x)
+y_prediction = nA.apply_MLPRegressor(train_x, train_y, test_x)
 predictions.append(y_prediction)
-titles.append("Neural Network MLP Classifier")
-#visualize(test_y, y_prediction, "Neural Network MLP Classifier")
+titles.append("Neural Network MLP Regressor")
+visualize(test_y, y_prediction, "Neural Network MLP Regressor")
 ####################################################################################
+
 
 ################## apply Naive Bayes GaussianNB##################
 y_prediction = nba.apply_naive(train_x, train_y, test_x)
 predictions.append(y_prediction)
 titles.append("Naive Bayes GaussianNB")
-#visualize(test_y, y_prediction, "Naive Bayes GaussianNB")
+visualize(test_y, y_prediction, "Naive Bayes GaussianNB")
 
 #Apply Linear and Quadratic Discrimination Analysis
 solvers = ["svd", "lsqr", "eigen"]
@@ -148,41 +148,43 @@ titles.append("Quadratic Discrimination Analysis: lsqr")
 ####################################################################################
 
 
-##################apply Gaussian Process Classifier##################
+##################apply Gaussian Process Regressor##################
 y_prediction = gca.apply_gaus(train_x, train_y, test_x)
 predictions.append(y_prediction)
-titles.append("Gaussian Process Classifier")
-#visualize(test_y, y_prediction, "Gaussian Process Classifier")
-
+titles.append("Gaussian Process Regressor")
+visualize(test_y, y_prediction, "Gaussian Process Regressor")
 ####################################################################################
 
-###################apply Decision Tree Classifier##################
+
+###################apply Decision Tree Regressor##################
 y_prediction = dta.apply_tree(train_x, train_y, test_x)
 predictions.append(y_prediction)
-titles.append("Decision Tree Classifier")
-#visualize(test_y, y_prediction, "Decision Tree Classifier")
-
+titles.append("Decision Tree Regressor")
+visualize(test_y, y_prediction, "Decision Tree Regressor")
 ####################################################################################
+
+###################apply Random Forest Regressor##################
+y_prediction = rfa.apply_forest(train_x, train_y, test_x)
+predictions.append(y_prediction)
+titles.append("Random Forest Regressor")
+visualize(test_y, y_prediction, "Random Forest Regressor")
+####################################################################################
+
 
 ################## apply k-Nearest-Neighbors Algorithm:##################
 size_k = 3
-y_prediction = kncAlgo.apply_logistic_regression(train_x, train_y, test_x, size_k)
+y_prediction = kncAlgo.apply_knn(train_x, train_y, test_x, size_k)
 predictions.append(y_prediction)
 titles.append("k-Nearest-Neighbors Algorithm: k=3")
-#visualize(test_y, y_prediction, "k-Nearest-Neighbors Algorithm: k=3")
+visualize(test_y, y_prediction, "k-Nearest-Neighbors Algorithm: k=3")
 
-size_k = 1
-y_prediction = kncAlgo.apply_logistic_regression(train_x, train_y, test_x, size_k)
+size_k = 4
+y_prediction = kncAlgo.apply_knn(train_x, train_y, test_x, size_k)
 predictions.append(y_prediction)
-titles.append("k-Nearest-Neighbors Algorithm: k=1")
-#visualize(test_y, y_prediction, "k-Nearest-Neighbors Algorithm: k=1")
-
-
+titles.append("k-Nearest-Neighbors Algorithm: k=4")
+visualize(test_y, y_prediction, "k-Nearest-Neighbors Algorithm: k=4")
 ####################################################################################
 
 
-for i in range(len(predictions)):
-    visualize(test_y, predictions[i], titles[i])
-
-
-
+#for i in range(len(predictions)):
+#    visualize(test_y, predictions[i], titles[i])

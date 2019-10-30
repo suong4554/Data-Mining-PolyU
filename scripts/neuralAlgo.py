@@ -1,15 +1,12 @@
-from sklearn.neural_network import MLPClassifier
+from sklearn.neural_network import MLPRegressor
 
-
-def apply_MLPClassifier(train_x, train_y, test_x):
+def apply_MLPRegressor(train_x, train_y, test_x):
     # apply Linear Regression:
-    mlp = MLPClassifier()
+    mlp = MLPRegressor()
     mlp.fit(train_x, train_y)
 
     # predict the results:
     y_prediction = mlp.predict(test_x)
-
-
 
     # return predictions:
     return y_prediction
