@@ -55,8 +55,10 @@ def dropColumn(df, dropArr):
         
     return df
 
-
-
+def dropRow(df, dropArrId):
+    for item in dropArrId:
+        df.drop(df[df["Id"] == item].index)
+    return df
 
 # returns the data from the Exel table:
 def load_df(dir_path, file_name):
@@ -83,12 +85,16 @@ dropArr = [
     'MiscVal', 
     '3SsnPorch', 
     'LowQualFinSF', 
-    'BsmtFinSF2', 
-    'BsmtHalfBath'
-
-
+    'BsmtFinSF2'
+    #'ScreenPorch',
+    #'BsmtHalfBath'
 ]
 
+
+dropArrId = [
+    "1299",
+    "524"
+]
 
 
 
@@ -98,7 +104,7 @@ dropArr = [
 # load the training data frame:
 home_dir = os.path.dirname(os.path.realpath(__file__)).replace("scripts", "")
 train_df = load_df(home_dir, "train.csv")
-
+#train_df = dropRow(train_df, dropArrId)
 train_df = dropColumn(train_df, dropArr)
 #Encodes the dataframe to ints
 train_df = encodeArr(train_df)
