@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -10,7 +11,8 @@ from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
 warnings.filterwarnings('ignore')
 
-df_train = pd.read_csv('train.csv')
+home_dir = os.path.dirname(os.path.realpath(__file__)).replace("scripts", "")
+df_train = pd.read_csv(home_dir + "\\data\\train.csv")
 
 #attributes
 print(df_train.columns)
