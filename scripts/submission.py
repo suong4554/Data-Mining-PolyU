@@ -20,12 +20,42 @@ import randomForestAlgo as rfa
 
 #%matplotlib inline
 
+def createSubmission(arr, dir, id):
+    dir = dir + "\\submission\\submission.csv"
+    arr = list(arr)
+    for i in range(len(arr)):
+        arr[i] = [i + 1461, arr[i]]
+    df = pd.DataFrame(arr, columns = ["Id", "SalePrice"])
+    df.to_csv(dir, index=False)
+    print("submission written to file")
+
+
+def submit(submitB, message, dir):
+    dir = dir + "\\submission\\submission.csv"
+    command = 'kaggle competitions submit -c house-prices-advanced-regression-techniques -f ' + str(dir) + ' -m "' + str(message) + '"'
+    if(submitB):
+        os.system(command)
+        print("\n Submitted")
+    else:
+        print("Not Submitted")
+        
+        
+
 def visualize(test_y, pred_y, title):
     plt.scatter(test_y, pred_y)
     plt.xlabel("Prices: $Y_i$")
     plt.ylabel("Predicted prices: $\hat{Y}_i$")
     plt.title(title)
     plt.show()
+
+
+def dropColumn(df, dropArr):
+    for item in dropArr:
+        df = df.drop(item, axis = 1)
+        
+    return df
+
+
 
 
 # returns the data from the Exel table:
@@ -42,6 +72,26 @@ def encodeArr(train_df):
         train_df[i] = train_df[i].cat.codes
     return train_df
 
+
+##########################################################################################
+dropArr = [
+    'PoolQC', 
+    'MiscFeature', 
+    'Alley', 
+    'Fence', 
+    'FireplaceQu', 
+    'MiscVal', 
+    '3SsnPorch', 
+    'LowQualFinSF', 
+    'BsmtFinSF2', 
+    'BsmtHalfBath'
+
+
+]
+
+
+
+
 ##########################################################################################
 #####################################DATA PREPROCESSING###################################
 #Website for encoding data: https://www.datacamp.com/community/tutorials/categorical-data
@@ -49,17 +99,29 @@ def encodeArr(train_df):
 home_dir = os.path.dirname(os.path.realpath(__file__)).replace("scripts", "")
 train_df = load_df(home_dir, "train.csv")
 
+train_df = dropColumn(train_df, dropArr)
 #Encodes the dataframe to ints
 train_df = encodeArr(train_df)
 
 
 # create the training set: (without "target" and "Id" column)
-train_x = train_df.drop("SalePrice", axis=1).drop("Id", axis=1)[["MSSubClass", "MSZoning", "LotArea", "Neighborhood", "Condition1", "BldgType", "HouseStyle", "OverallQual", "YearBuilt", "YearRemodAdd", "MasVnrArea", "BsmtFinSF1", "BsmtUnfSF", "TotalBsmtSF", "Electrical", "1stFlrSF", "2ndFlrSF", "GrLivArea", "KitchenQual", "TotRmsAbvGrd", "Fireplaces", "GarageYrBlt", "GarageCars", "GarageArea", "WoodDeckSF", "OpenPorchSF", "SaleType"]]
+train_x = train_df.drop("SalePrice", axis=1).drop("Id", axis=1)
+train_y = train_df["SalePrice"]
 
-target_y = train_df["SalePrice"]
 
-#Split up the dataset for testing and training purposes
-train_x, test_x, train_y, test_y = train_test_split(train_x, target_y, test_size = 0.33, random_state = 5)
+
+test_df = load_df(home_dir, "test.csv")
+test_df = dropColumn(test_df, dropArr)
+
+test_df = encodeArr(test_df)
+id = test_df["Id"]
+test_x = test_df.drop("Id", axis=1)
+
+##########################################################################################
+
+
+
+
 
 
 
@@ -72,42 +134,26 @@ titles = []
 
 
 ################## apply Linear Regression: #####################
-y_prediction = linearAlgo.apply_linear_regression(train_x, train_y, test_x)
-predictions.append(y_prediction)
-titles.append("Linear Regression")
-visualize(test_y, y_prediction, "Linear Regression")
-####################################################################################
-
-"""
-################## apply SVM Regression: #####################
-y_prediction = svm.apply_svr(train_x, train_y, test_x)
-predictions.append(y_prediction)
-titles.append("SVM Regression")
-visualize(test_y, y_prediction, "SVM Regression")
-####################################################################################
-"""
-################## apply Neural Network MLP Classifier##################
 y_prediction = nA.apply_MLPRegressor(train_x, train_y, test_x)
-predictions.append(y_prediction)
-titles.append("Neural Network MLP Regressor")
-visualize(test_y, y_prediction, "Neural Network MLP Regressor")
+createSubmission(y_prediction, home_dir, id)
+
+
+submitD = True
+message = "test submission linear Regression"
+submit(submitD, message, home_dir)
+
+
 ####################################################################################
-"""
 
-################## apply k-Nearest-Neighbors Algorithm:##################
-size_k = 3
-y_prediction = kncAlgo.apply_knn(train_x, train_y, test_x, size_k)
-predictions.append(y_prediction)
-titles.append("k-Nearest-Neighbors Algorithm: k=3")
-visualize(test_y, y_prediction, "k-Nearest-Neighbors Algorithm: k=3")
+################## apply MLP: #####################
+y_prediction = nA.apply_MLPRegressor(train_x, train_y, test_x)
+createSubmission(y_prediction, home_dir, id)
 
-size_k = 5
-y_prediction = kncAlgo.apply_knn(train_x, train_y, test_x, size_k)
-predictions.append(y_prediction)
-titles.append("k-Nearest-Neighbors Algorithm: k=4")
-visualize(test_y, y_prediction, "k-Nearest-Neighbors Algorithm: k=5")
+
+submitD = True
+message = "test submission MultiLayer Perceptron"
+submit(submitD, message, home_dir)
+
+
 ####################################################################################
-"""
 
-#for i in range(len(predictions)):
-#    visualize(test_y, predictions[i], titles[i])
