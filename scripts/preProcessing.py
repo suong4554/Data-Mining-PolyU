@@ -32,7 +32,10 @@ def combineLivingArea(df):
         total.append(totalVal)
     
     temp = pd.DataFrame({"floorSF": total}) 
-        
+    df.join(temp)
+    print(df["floorSF"])
+    return df
+    
 def visualize(test_y, pred_y, title, column):
     plt.scatter(test_y, pred_y)
     plt.xlabel(column)

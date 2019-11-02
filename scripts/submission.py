@@ -85,7 +85,8 @@ dropArr = [
     'MiscVal', 
     '3SsnPorch', 
     'LowQualFinSF', 
-    'BsmtFinSF2'
+    'BsmtFinSF2',
+    "Utilities"
     #'ScreenPorch',
     #'BsmtHalfBath'
 ]
