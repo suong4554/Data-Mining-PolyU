@@ -2,7 +2,7 @@ from sklearn.neural_network import MLPRegressor
 
 def apply_MLPRegressor(train_x, train_y, test_x):
     # apply Linear Regression:
-    mlp = MLPRegressor()
+    mlp = MLPRegressor(1000, 'relu', 'lbfgs')
     mlp.fit(train_x, train_y)
 
     # predict the results:
