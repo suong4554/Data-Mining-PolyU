@@ -197,7 +197,7 @@ def process_data():
 
     train = all_data[:ntrain]
     test = all_data[ntrain:]
-    print(test)
+    print(test.shape, "Test Shape")
 
     #Split up the dataset for testing and training purposes
     train_x, test_x, train_y, test_y = train_test_split(train, y_target, test_size = 0.33, random_state = 5)
