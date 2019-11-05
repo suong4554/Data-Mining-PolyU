@@ -2,8 +2,10 @@ from enum import Enum
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 import os
+
+import featureCombine as fc
+
 from scipy import stats
 from scipy.stats import norm, skew
 from sklearn.preprocessing import LabelEncoder
@@ -34,12 +36,27 @@ def cleanupEmptyValues(df):
 
 def combineDropFeatures(df):
     # add important features more
-    df['TotalSF'] = df['TotalBsmtSF'] + df['1stFlrSF'] + df['2ndFlrSF'] #feature which is the total area of basement, first and second floor areas of each house
+    #df['TotalSF'] = df['TotalBsmtSF'] + df['1stFlrSF'] + df['2ndFlrSF'] #feature which is the total area of basement, first and second floor areas of each house
     
     
+    df = fc.combineLivingArea(df)
+    df = fc.combineBaths(df)
+    df = fc.mergeYearBuilt(df)
+    #df = combineUtilities(df)
+    #df = porchTypes(df)
     
     
-    
+    '''
+    combine = [
+        ["WoodDeckSF", "OpenPorchSF", "OutdoorSpace"],
+        ["BsmtFinType1", "BsmtFinType2", "BsmtFin"],
+        ["ExterQual", "ExterCond", "ExterEval"],
+        ["BsmtQual", "BsmtCond", "BsmtEval"],
+        ["Condition1", "Condition2", "OverallProx"],
+        ["Exterior1st", "Exterior2nd", "Exterior"]
+        ]
+    '''
+    #df = calculateValue(df, combine)
     
     return df
 
