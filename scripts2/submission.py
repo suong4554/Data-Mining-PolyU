@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 #Cleans up data
 import preProcess as pp
 
-import linearAlgo
+import linearAlgo as lA
 import neuralAlgo as nA
 
 
@@ -96,12 +96,8 @@ test_ID = all_data[3]
 #####################################Applying ML Algo###################################
 
 
-predictions = []
-titles = []
-
-
 ################## apply Linear Regression: #####################
-y_prediction = nA.apply_MLPRegressor(train_x, train_y, test_x)
+y_prediction = lA.apply_linear_regression(train_x, train_y, test_x)
 createSubmission(y_prediction, home_dir, id)
 
 
