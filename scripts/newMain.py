@@ -210,7 +210,7 @@ def model():
     y_prediction = linearAlgo.apply_linear_regression(train_x, train_y, test_x)
     predictions.append(y_prediction)
     titles.append("Linear Regression")
-    visualize(test_y, y_prediction, "Linear Regression")
+    visualize(np.expm1(test_y), np.expm1(y_prediction), "Linear Regression")
     ####################################################################################
 
     """

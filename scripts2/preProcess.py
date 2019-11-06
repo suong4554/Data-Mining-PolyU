@@ -37,15 +37,15 @@ def cleanupEmptyValues(df):
 def combineDropFeatures(df):
     # add important features more
     #df['TotalSF'] = df['TotalBsmtSF'] + df['1stFlrSF'] + df['2ndFlrSF'] #feature which is the total area of basement, first and second floor areas of each house
-    
-    
+
+
     df = fc.combineLivingArea(df)
     df = fc.combineBaths(df)
     df = fc.mergeYearBuilt(df)
     #df = combineUtilities(df)
     #df = porchTypes(df)
-    
-    
+
+
     '''
     combine = [
         ["WoodDeckSF", "OpenPorchSF", "OutdoorSpace"],
@@ -57,7 +57,7 @@ def combineDropFeatures(df):
         ]
     '''
     #df = calculateValue(df, combine)
-    
+
     return df
 
 
@@ -68,7 +68,7 @@ def normalizeFeatures(df):
                 #display_distrib(df, feature)
                 df[feature] = np.log1p(df[feature])
                 #display_distrib(df, feature)
-    
+
     return df
 
 def numericToCategory(df):
@@ -82,32 +82,32 @@ def numericToCategory(df):
     # encode categorical features by LabelEncoder or dummies
     # do label encoding for categorical features
     categorical_features = \
-        ('FireplaceQu', 
-        'BsmtQual', 
-        'BsmtCond', 
-        'GarageQual', 
+        ('FireplaceQu',
+        'BsmtQual',
+        'BsmtCond',
+        'GarageQual',
         'GarageCond',
-        'ExterQual', 
+        'ExterQual',
         'ExterCond',
-        'HeatingQC', 
-        'PoolQC', 
-        'KitchenQual', 
+        'HeatingQC',
+        'PoolQC',
+        'KitchenQual',
         'BsmtFinType1',
-        'BsmtFinType2', 
-        'Functional', 
+        'BsmtFinType2',
+        'Functional',
         'Fence',
-        'BsmtExposure', 
+        'BsmtExposure',
         'GarageFinish',
         'LandSlope',
-        'LotShape', 
-        'PavedDrive', 
-        'Street', 
-        'Alley', 
+        'LotShape',
+        'PavedDrive',
+        'Street',
+        'Alley',
         'CentralAir',
         'MSSubClass',
         'OverallQual',
-        'OverallCond', 
-        'YrSold', 
+        'OverallCond',
+        'YrSold',
         'MoSold')
     for c in categorical_features:
         lbl = LabelEncoder()
@@ -117,7 +117,7 @@ def numericToCategory(df):
     # get dummy categorical features
     df = pd.get_dummies(df)
 
-    
+
     return df
 
 
@@ -133,8 +133,8 @@ def process_data(train, test):
     train = train.drop(train[(train['GrLivArea']>4000) & (train['SalePrice']<300000)].index)
 
     # normalize distribution of output (SalePrice)
-    #train["SalePrice"] = np.log1p(train["SalePrice"])
-    train_y = train.SalePrice.values
+    train["SalePrice"] = np.log1p(train["SalePrice"])
+    train_target = train.SalePrice.values
 
     # concatenate the train and test data
     trainShape = train.shape[0]
@@ -148,11 +148,10 @@ def process_data(train, test):
 
     train = df[:trainShape]
     test = df[trainShape:]
-    
+
     print(test.shape)
-    #Train data at all_data[0], Test at all_data[1], 
-    #train_y at all_data[2], test_ID at all_data[3]
-    all_data = [train, test, train_y, test_ID]
-    
+    #Train data at all_data[0], Test at all_data[1],
+    #train_target at all_data[2], test_ID at all_data[3]
+    all_data = [train, test, train_target, test_ID]
+
     return all_data
-    
