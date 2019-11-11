@@ -34,17 +34,16 @@ def cleanupEmptyValues(df):
     df["Functional"] = df["Functional"].fillna("Typ") #data description says NA means typical
     return df
 
+
 def combineDropFeatures(df):
     # add important features more
     #df['TotalSF'] = df['TotalBsmtSF'] + df['1stFlrSF'] + df['2ndFlrSF'] #feature which is the total area of basement, first and second floor areas of each house
-
 
     df = fc.combineLivingArea(df)
     df = fc.combineBaths(df)
     df = fc.mergeYearBuilt(df)
     #df = combineUtilities(df)
     #df = porchTypes(df)
-
 
     '''
     combine = [
@@ -70,6 +69,7 @@ def normalizeFeatures(df):
                 #display_distrib(df, feature)
 
     return df
+
 
 def numericToCategory(df):
     # transform numeric features into categorical features
@@ -117,7 +117,6 @@ def numericToCategory(df):
     # get dummy categorical features
     df = pd.get_dummies(df)
 
-
     return df
 
 
@@ -127,7 +126,6 @@ def process_data(train, test):
     test_ID = test['Id']
     train.drop('Id', axis = 1, inplace = True)
     test.drop('Id', axis = 1, inplace = True)
-
 
     # analyze and remove huge outliers: GrLivArea, ...
     train = train.drop(train[(train['GrLivArea']>4000) & (train['SalePrice']<300000)].index)

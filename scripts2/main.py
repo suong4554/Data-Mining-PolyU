@@ -114,7 +114,7 @@ visualize(test_y, y_prediction, "k-Nearest-Neighbors Algorithm: k=5")
 ####################################################################################
 """
 
-lm = MLPRegressor(10000, 'relu', 'lbfgs')
+lm = MLPRegressor(25000, 'relu', 'lbfgs')
 lm.fit(train, train_target)
 ensemble = np.expm1(lm.predict(test))
 

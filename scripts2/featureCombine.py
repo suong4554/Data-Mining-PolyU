@@ -1,47 +1,42 @@
 import pandas as pd
 
 
-    
-    
+
+
 
 def dropColumn(df, dropArr):
     for item in dropArr:
         df = df.drop(item, axis = 1)
-        
-    return df
 
+    return df
 
 
 def calculateValue(df, arrQC):
     #Merges Quality and Condition
-    
     for subset in arrQC:
         columns = [subset[0], subset[1]]
-        
+
         cond1 = df[subset[0]]
         cond2 = df[subset[1]]
-
         total = []
+
         for i, cond1Val in enumerate(cond1):
             cond2Val = cond2[i]
             totalVal = cond2Val + cond1Val
             total.append(totalVal)
-        
-        
-        df[subset[2]] = total
-        df = dropColumn(df, columns)
-        
-        
-    return df
 
+        df[subset[2]] = total
+        #df = dropColumn(df, columns)
+
+    return df
 
 
 def combineBaths(df):
     #Combines all bathrooms
     #puts it into column totalBaths
-    
+
     baths = ["BsmtFullBath", "BsmtHalfBath", "FullBath", "HalfBath"]
-    
+
     #hb = half bath, fb = full bath
     bhb = df["BsmtFullBath"]
     bfb = df["BsmtHalfBath"]
@@ -55,10 +50,10 @@ def combineBaths(df):
         hbVal = hb[i]
         totalVal = bhbVal*.5 + bfbVal + fbVal + hbVal*.5
         total.append(totalVal)
-    
-    
+
+
     df["totalBaths"] = total
-    df = dropColumn(df, baths)
+    #df = dropColumn(df, baths)
     return df
 
 
@@ -67,9 +62,9 @@ def combineBaths(df):
 def porchTypes(df):
     #Combines EnclosedPorch, 3SsnPorch and ScreenPorch (once both are converted to ints)
     #puts it into column PorchTypes
-    
+
     PorchTypes = ["EnclosedPorch", "3SsnPorch", "ScreenPorch"]
-    
+
     Enclosed = df["EnclosedPorch"]
     TriSsn = df["3SsnPorch"]
     Screen = df["ScreenPorch"]
@@ -80,19 +75,19 @@ def porchTypes(df):
         ScreenVal = Screen[i]
         totalVal = TriSsnVal + ScreenVal + EnclosedVal
         total.append(totalVal)
-    
-    
+
+
     df["PorchTypes"] = total
-    df = dropColumn(df, PorchTypes)
-    return df 
-    
+    #df = dropColumn(df, PorchTypes)
+    return df
+
 
 
 def mergeYearBuilt(df):
     #Combines YearBuilt and YearRemodAdd (once both are converted to ints)
     #puts it into column YearRennovation
     years = ["YearBuilt", "YearRemodAdd"]
-    
+
     cond1 = df["YearBuilt"]
     cond2 = df["YearRemodAdd"]
     total = []
@@ -104,20 +99,20 @@ def mergeYearBuilt(df):
         else:
             recentVal = cond2Val
         total.append(recentVal)
-    
-    
-    df["YearRennovation"] = total
-    df = dropColumn(df, years)
-    return df
-    
 
- 
+
+    df["YearRennovation"] = total
+    #df = dropColumn(df, years)
+    return df
+
+
+
 def combineLivingArea(df):
     #Combines 1stFloor SquareFeet with 2ndFloor SquareFeet
     #puts it into column totalSF
-    
+
     livingSF = ["TotalBsmtSF", "1stFlrSF", "2ndFlrSF"]
-    
+
     ground = df["TotalBsmtSF"]
     first = df["1stFlrSF"]
     second = df["2ndFlrSF"]
@@ -128,18 +123,18 @@ def combineLivingArea(df):
         groundVal = ground[i]
         totalVal = groundVal + firstVal + secondVal
         total.append(totalVal)
-    
-    
+
+
     df["totalSF"] = total
-    df = dropColumn(df, livingSF)
+    #df = dropColumn(df, livingSF)
     return df
- 
+
 def combineUtilities(df):
     #Combines Heating, CentralAir and Electrical
     #puts it into column utilities
-    
+
     livingSF = ["Heating", "CentralAir", "Electrical"]
-    
+
     heating = df["Heating"].fillna(df["Heating"]).astype('category').cat.codes
     ac = df["CentralAir"].fillna(df["Heating"]).astype('category').cat.codes
     electrical = df["Electrical"].fillna(df["Heating"]).astype('category').cat.codes
@@ -150,8 +145,8 @@ def combineUtilities(df):
         acVal = ac[i]
         utilities = int(heatingVal) + int(acVal) + int(electricalVal)
         total.append(utilities)
-    
-    
+
+
     df["utilities"] = total
-    df = dropColumn(df, livingSF)
+    #df = dropColumn(df, livingSF)
     return df

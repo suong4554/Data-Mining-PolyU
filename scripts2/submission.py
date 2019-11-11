@@ -33,8 +33,7 @@ def submit(submitB, message, dir):
         print("\n Submitted")
     else:
         print("Not Submitted")
-        
-        
+
 
 def visualize(test_y, pred_y, title):
     plt.scatter(test_y, pred_y)
@@ -77,7 +76,7 @@ test_df = load_df(home_dir, "test.csv")
 all_data = pp.process_data(train_df, test_df)
 
 
-#Train data at all_data[0], Test at all_data[1], 
+#Train data at all_data[0], Test at all_data[1],
 #train_y at all_data[2], test_ID at all_data[3]
 train_x = all_data[0]
 test_x = all_data[1]
@@ -119,4 +118,3 @@ submit(submitD, message, home_dir)
 
 
 ####################################################################################
-
