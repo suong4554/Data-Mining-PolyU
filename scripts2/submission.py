@@ -8,12 +8,9 @@ from sklearn.model_selection import train_test_split
 
 #Cleans up data
 import preProcess as pp
-
 import linearAlgo as lA
 import neuralAlgo as nA
-
-
-#%matplotlib inline
+import stackedAlgo as sA
 
 def createSubmission(arr, dir, id):
     dir = dir + "\\submission\\submission.csv"
@@ -24,7 +21,6 @@ def createSubmission(arr, dir, id):
     df.to_csv(dir, index=False)
     print("submission written to file")
 
-
 def submit(submitB, message, dir):
     dir = dir + "\\submission\\submission.csv"
     command = 'kaggle competitions submit -c house-prices-advanced-regression-techniques -f ' + str(dir) + ' -m "' + str(message) + '"'
@@ -33,7 +29,6 @@ def submit(submitB, message, dir):
         print("\n Submitted")
     else:
         print("Not Submitted")
-
 
 def visualize(test_y, pred_y, title):
     plt.scatter(test_y, pred_y)
@@ -58,23 +53,13 @@ def encodeArr(train_df):
 
 
 ##########################################################################################
-
-
-
-
-
-
-
-##########################################################################################
 #####################################DATA PREPROCESSING###################################
-#Website for encoding data: https://www.datacamp.com/community/tutorials/categorical-data
 # load the training data frame:
 home_dir = os.path.dirname(os.path.realpath(__file__)).replace("scripts2", "")
 train_df = load_df(home_dir, "train.csv")
 test_df = load_df(home_dir, "test.csv")
 
 all_data = pp.process_data(train_df, test_df)
-
 
 #Train data at all_data[0], Test at all_data[1],
 #train_y at all_data[2], test_ID at all_data[3]
@@ -83,38 +68,34 @@ test_x = all_data[1]
 train_y = all_data[2]
 test_ID = all_data[3]
 
-##########################################################################################
-
-
-
-
-
-
 
 ########################################################################################
 #####################################Applying ML Algo###################################
 
 
-################## apply Linear Regression: #####################
+################## apply Linear Regression #####################
 y_prediction = lA.apply_linear_regression(train_x, train_y, test_x)
 createSubmission(y_prediction, home_dir, id)
 
-
 submitD = True
-message = "test submission linear Regression"
+message = "test submission Linear Regression"
 submit(submitD, message, home_dir)
-
-
 ####################################################################################
 
-################## apply MLP: #####################
+################## apply MLP Regression #####################
 y_prediction = nA.apply_MLPRegressor(train_x, train_y, test_x)
 createSubmission(y_prediction, home_dir, id)
-
 
 submitD = True
 message = "test submission MultiLayer Perceptron"
 submit(submitD, message, home_dir)
+####################################################################################
 
+################## apply Stacked Linear Regression #####################
+y_prediction = sA.apply_stacked_regression(train_x, train_y, test_x)
+createSubmission(y_prediction, home_dir, id)
 
+submitD = True
+message = "test submission Stacked Linear Regression"
+submit(submitD, message, home_dir)
 ####################################################################################
