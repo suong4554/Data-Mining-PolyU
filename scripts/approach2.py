@@ -44,7 +44,7 @@ def load_df(dir_path, file_name):
     data = pd.read_csv(file)
     return data
 
-home_dir = os.path.dirname(os.path.realpath(__file__)).replace("scripts", "")
+home_dir = os.path.dirname(os.path.realpath(__file__)).replace("scripts2", "")
 train = load_df(home_dir, "train.csv")
 test = load_df(home_dir, "test.csv")
 
@@ -112,7 +112,6 @@ print( '\n mu = {:.2f} and sigma = {:.2f}\n'.format(mu, sigma))
 # 2. Plot SalePrice as a QQPlot
 fig = plt.figure()
 res = stats.probplot(train['SalePrice'], plot=plt)
-plt.title('SalePrice qqplot')
 plt.show()
 
 
