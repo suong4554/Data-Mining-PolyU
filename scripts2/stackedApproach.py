@@ -51,8 +51,6 @@ test_df = load_df(home_dir, "test.csv")
 
 [train, test, train_target, test_ID] = process_data(train_df, test_df)
 
-#Split up the dataset for testing and training purposes
-train_x, test_x, train_y, test_y = train_test_split(train, train_target, test_size = 0.33, random_state = 5)
 
 #################################### New Approach starting here ###########################
 #########################################################################################
