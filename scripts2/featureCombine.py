@@ -1,5 +1,3 @@
-import pandas as pd
-
 def dropColumn(df, dropArr):
     for item in dropArr:
         df = df.drop(item, axis = 1)

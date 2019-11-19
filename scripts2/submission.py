@@ -12,8 +12,8 @@ import linearAlgo as lA
 import neuralAlgo as nA
 import stackedAlgo as sA
 
-def createSubmission(arr, dir, id):
-    dir = dir + "\\submission\\submission.csv"
+def createSubmission(arr, dir, id, file_name):
+    dir = dir + "\\submission\\" + file_name
     arr = list(arr)
     for i in range(len(arr)):
         arr[i] = [i + 1461, arr[i]]
@@ -75,27 +75,27 @@ test_ID = all_data[3]
 
 ################## apply Linear Regression #####################
 y_prediction = lA.apply_linear_regression(train_x, train_y, test_x)
-createSubmission(y_prediction, home_dir, id)
+createSubmission(y_prediction, home_dir, id, 'submission_linear_regression.csv')
 
 submitD = True
-message = "test submission Linear Regression"
+message = "test submission linear regression"
 submit(submitD, message, home_dir)
 ####################################################################################
 
 ################## apply MLP Regression #####################
 y_prediction = nA.apply_MLPRegressor(train_x, train_y, test_x)
-createSubmission(y_prediction, home_dir, id)
+createSubmission(y_prediction, home_dir, id, 'submission_mlp_regression.csv')
 
 submitD = True
-message = "test submission MultiLayer Perceptron"
+message = "test submission multi layer perceptron regression"
 submit(submitD, message, home_dir)
 ####################################################################################
 
 ################## apply Stacked Linear Regression #####################
 y_prediction = sA.apply_stacked_regression(train_x, train_y, test_x)
-createSubmission(y_prediction, home_dir, id)
+createSubmission(y_prediction, home_dir, id, 'submission_stacked_regression.csv')
 
 submitD = True
-message = "test submission Stacked Linear Regression"
+message = "test submission stacked linear regression"
 submit(submitD, message, home_dir)
 ####################################################################################

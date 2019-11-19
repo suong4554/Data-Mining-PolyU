@@ -304,7 +304,7 @@ cv_krr.plot(title = "Validation")
 plt.xlabel("Alpha")
 plt.ylabel("Rmse")
 plt.show()
-model_krr = make_pipeline(RobustScaler(), KernelRidge(alpha=6, kernel='polynomial', degree=2.65, coef0=6.9))
+model_krr = make_pipeline(RobustScaler(), KernelRidge(alpha=6, kernel='polynomial'))
 
 
 # Initiating Gradient Boosting Regressor
