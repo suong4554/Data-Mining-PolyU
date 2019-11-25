@@ -1,13 +1,34 @@
+from sklearn.linear_model import LinearRegression
 import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 
+#Cleans up data
+import preProcess as pp
 import linearAlgo as lA
 import neuralAlgo as nA
 import stackedAlgo as sA
-from preProcess import process_data
+
+def createSubmission(arr, dir, id, file_name):
+    dir = dir + "\\submission\\" + file_name
+    arr = list(arr)
+    for i in range(len(arr)):
+        arr[i] = [i + 1461, arr[i]]
+    df = pd.DataFrame(arr, columns = ["Id", "SalePrice"])
+    df.to_csv(dir, index=False)
+    print("submission written to file")
+
+def submit(submitB, message, dir, file_name):
+    dir = dir + "\\submission\\" + file_name
+    command = 'kaggle competitions submit -c house-prices-advanced-regression-techniques -f ' + str(dir) + ' -m "' + str(message) + '"'
+    if(submitB):
+        os.system(command)
+        print("\n Submitted")
+    else:
+        print("Not Submitted")
 
 def visualize(test_y, pred_y, title):
     plt.scatter(test_y, pred_y)
@@ -22,66 +43,61 @@ def load_df(dir_path, file_name):
     data = pd.read_csv(file)
     return data
 
+def encodeArr(train_df):
+    for i in train_df:
+        #Casting type to category for efficiency
+        train_df[i] = train_df[i].fillna(train_df[i]).astype('category')
+        #Built in python to convert each value in a column to a number
+        train_df[i] = train_df[i].cat.codes
+    return train_df
+
+
 ##########################################################################################
 #####################################DATA PREPROCESSING###################################
 # load the training data frame:
-home_dir = os.path.dirname(os.path.realpath(__file__)).replace("scripts", "")
+home_dir = os.path.dirname(os.path.realpath(__file__)).replace("scripts2", "")
 train_df = load_df(home_dir, "train.csv")
 test_df = load_df(home_dir, "test.csv")
 
-[train, test, train_target, test_ID] = process_data(train_df, test_df)
+all_data = pp.process_data(train_df, test_df)
 
-#Split up the dataset for testing and training purposes
-train_x, test_x, train_y, test_y = train_test_split(train, train_target, test_size = 0.33, random_state = 5)
+#Train data at all_data[0], Test at all_data[1],
+#train_y at all_data[2], test_ID at all_data[3]
+train_x = all_data[0]
+test_x = all_data[1]
+train_y = all_data[2]
+test_ID = all_data[3]
 
 
 ########################################################################################
 #####################################Applying ML Algo###################################
-predictions = []
-titles = []
-
 """
-################## apply SVM Regression: #####################
-y_prediction = svm.apply_svr(train_x, train_y, test_x)
-predictions.append(y_prediction)
-titles.append("SVM Regression")
-visualize(test_y, y_prediction, "SVM Regression")
-####################################################################################
-
-################## apply k-Nearest-Neighbors Algorithm:##################
-size_k = 3
-y_prediction = kncAlgo.apply_knn(train_x, train_y, test_x, size_k)
-predictions.append(y_prediction)
-titles.append("k-Nearest-Neighbors Algorithm: k=3")
-visualize(test_y, y_prediction, "k-Nearest-Neighbors Algorithm: k=3")
-
-size_k = 5
-y_prediction = kncAlgo.apply_knn(train_x, train_y, test_x, size_k)
-predictions.append(y_prediction)
-titles.append("k-Nearest-Neighbors Algorithm: k=4")
-visualize(test_y, y_prediction, "k-Nearest-Neighbors Algorithm: k=5")
-####################################################################################"""
 
 ################## apply Linear Regression #####################
-y_prediction = lA.apply_linear_regression(train_x, train_y, train_x)
-predictions.append(y_prediction)
-titles.append("Linear Regression")
-visualize(np.expm1(train_y), y_prediction, "Linear Regression")
+y_prediction = lA.apply_linear_regression(train_x, train_y, test_x)
+createSubmission(y_prediction, home_dir, id, 'submission_linear_regression.csv')
+file = 'submission_linear_regression.csv'
+submitD = True
+message = "test submission linear regression"
+submit(submitD, message, home_dir, file)
 ####################################################################################
+
 
 ################## apply MLP Regression #####################
 y_prediction = nA.apply_MLPRegressor(train_x, train_y, test_x)
-predictions.append(y_prediction)
-titles.append("MLP Regression")
-visualize(np.expm1(test_y), y_prediction, "MLP Regression")
+createSubmission(y_prediction, home_dir, id, 'submission_mlp_regression.csv')
+file = 'submission_mlp_regression.csv'
+submitD = True
+message = "test submission multi layer perceptron regression"
+submit(submitD, message, home_dir, file)
 ####################################################################################
+"""
 
 ################## apply Stacked Linear Regression #####################
-y_prediction = sA.apply_stacked_regression(train_x, train_y, train_x)
-predictions.append(y_prediction)
-titles.append("Stacked Linear Regression")
-visualize(np.expm1(train_y), y_prediction, "Stacked Linear Regression")
+y_prediction = sA.apply_stacked_regression(train_x, train_y, test_x)
+createSubmission(y_prediction, home_dir, id, 'submission_stacked_regression.csv')
+file = 'submission_stacked_regression.csv'
+submitD = True
+message = "test submission stacked linear regression"
+submit(submitD, message, home_dir, file)
 ####################################################################################
-
-#for i in range(len(predictions)):
-#    visualize(test_y, predictions[i], titles[i])
