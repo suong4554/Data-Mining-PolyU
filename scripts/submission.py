@@ -55,7 +55,7 @@ def encodeArr(train_df):
 ##########################################################################################
 #####################################DATA PREPROCESSING###################################
 # load the training data frame:
-home_dir = os.path.dirname(os.path.realpath(__file__)).replace("scripts2", "")
+home_dir = os.path.dirname(os.path.realpath(__file__)).replace("scripts", "")
 train_df = load_df(home_dir, "train.csv")
 test_df = load_df(home_dir, "test.csv")
 
@@ -77,7 +77,7 @@ test_ID = all_data[3]
 y_prediction = lA.apply_linear_regression(train_x, train_y, test_x)
 createSubmission(y_prediction, home_dir, id, 'submission_linear_regression.csv')
 
-submitD = True
+submitD = False
 message = "test submission linear regression"
 submit(submitD, message, home_dir)
 ####################################################################################
@@ -86,7 +86,7 @@ submit(submitD, message, home_dir)
 y_prediction = nA.apply_MLPRegressor(train_x, train_y, test_x)
 createSubmission(y_prediction, home_dir, id, 'submission_mlp_regression.csv')
 
-submitD = True
+submitD = False
 message = "test submission multi layer perceptron regression"
 submit(submitD, message, home_dir)
 ####################################################################################
