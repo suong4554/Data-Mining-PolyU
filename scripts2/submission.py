@@ -21,8 +21,8 @@ def createSubmission(arr, dir, id, file_name):
     df.to_csv(dir, index=False)
     print("submission written to file")
 
-def submit(submitB, message, dir):
-    dir = dir + "\\submission\\submission.csv"
+def submit(submitB, message, dir, file_name):
+    dir = dir + "\\submission\\" + file_name
     command = 'kaggle competitions submit -c house-prices-advanced-regression-techniques -f ' + str(dir) + ' -m "' + str(message) + '"'
     if(submitB):
         os.system(command)
@@ -76,26 +76,28 @@ test_ID = all_data[3]
 ################## apply Linear Regression #####################
 y_prediction = lA.apply_linear_regression(train_x, train_y, test_x)
 createSubmission(y_prediction, home_dir, id, 'submission_linear_regression.csv')
-
+file = 'submission_linear_regression.csv'
 submitD = True
 message = "test submission linear regression"
-submit(submitD, message, home_dir)
+submit(submitD, message, home_dir, file)
 ####################################################################################
+
 
 ################## apply MLP Regression #####################
 y_prediction = nA.apply_MLPRegressor(train_x, train_y, test_x)
 createSubmission(y_prediction, home_dir, id, 'submission_mlp_regression.csv')
-
+file = 'submission_mlp_regression.csv'
 submitD = True
 message = "test submission multi layer perceptron regression"
-submit(submitD, message, home_dir)
+submit(submitD, message, home_dir, file)
 ####################################################################################
+
 
 ################## apply Stacked Linear Regression #####################
 y_prediction = sA.apply_stacked_regression(train_x, train_y, test_x)
 createSubmission(y_prediction, home_dir, id, 'submission_stacked_regression.csv')
-
+file = 'submission_stacked_regression.csv'
 submitD = True
 message = "test submission stacked linear regression"
-submit(submitD, message, home_dir)
+submit(submitD, message, home_dir, file)
 ####################################################################################
