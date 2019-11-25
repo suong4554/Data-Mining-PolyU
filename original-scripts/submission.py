@@ -6,20 +6,29 @@ import matplotlib.pyplot as plt
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 
-#Cleans up data
-import preProcess as pp
-import linearAlgo as lA
-import neuralAlgo as nA
-import stackedAlgo as sA
 
-def createSubmission(arr, dir, id, file_name):
-    dir = dir + "\\submission\\" + file_name
+import linearAlgo
+import logAlgo
+import kncAlgo
+import svmAlgo as svm
+import neuralAlgo as nA
+import gausClassAlgo as gca
+import decTreeAlgo as dta
+import discrimAnalAlgo as daa
+import naiveBayAlgo as nba
+import randomForestAlgo as rfa
+
+#%matplotlib inline
+
+def createSubmission(arr, dir, id):
+    dir = dir + "\\submission\\submission.csv"
     arr = list(arr)
     for i in range(len(arr)):
         arr[i] = [i + 1461, arr[i]]
     df = pd.DataFrame(arr, columns = ["Id", "SalePrice"])
     df.to_csv(dir, index=False)
     print("submission written to file")
+
 
 def submit(submitB, message, dir):
     dir = dir + "\\submission\\submission.csv"
@@ -29,6 +38,8 @@ def submit(submitB, message, dir):
         print("\n Submitted")
     else:
         print("Not Submitted")
+        
+        
 
 def visualize(test_y, pred_y, title):
     plt.scatter(test_y, pred_y)
@@ -36,6 +47,18 @@ def visualize(test_y, pred_y, title):
     plt.ylabel("Predicted prices: $\hat{Y}_i$")
     plt.title(title)
     plt.show()
+
+
+def dropColumn(df, dropArr):
+    for item in dropArr:
+        df = df.drop(item, axis = 1)
+        
+    return df
+
+def dropRow(df, dropArrId):
+    for item in dropArrId:
+        df.drop(df[df["Id"] == item].index)
+    return df
 
 # returns the data from the Exel table:
 def load_df(dir_path, file_name):
@@ -53,49 +76,91 @@ def encodeArr(train_df):
 
 
 ##########################################################################################
+dropArr = [
+    'PoolQC', 
+    'MiscFeature', 
+    'Alley', 
+    'Fence', 
+    'FireplaceQu', 
+    'MiscVal', 
+    '3SsnPorch', 
+    'LowQualFinSF', 
+    'BsmtFinSF2',
+    "Utilities"
+    #'ScreenPorch',
+    #'BsmtHalfBath'
+]
+
+
+dropArrId = [
+    "1299",
+    "524"
+]
+
+
+
+##########################################################################################
 #####################################DATA PREPROCESSING###################################
+#Website for encoding data: https://www.datacamp.com/community/tutorials/categorical-data
 # load the training data frame:
-home_dir = os.path.dirname(os.path.realpath(__file__)).replace("scripts2", "")
+home_dir = os.path.dirname(os.path.realpath(__file__)).replace("scripts", "")
 train_df = load_df(home_dir, "train.csv")
+#train_df = dropRow(train_df, dropArrId)
+train_df = dropColumn(train_df, dropArr)
+#Encodes the dataframe to ints
+train_df = encodeArr(train_df)
+
+
+# create the training set: (without "target" and "Id" column)
+train_x = train_df.drop("SalePrice", axis=1).drop("Id", axis=1)
+train_y = train_df["SalePrice"]
+
+
+
 test_df = load_df(home_dir, "test.csv")
+test_df = dropColumn(test_df, dropArr)
 
-all_data = pp.process_data(train_df, test_df)
+test_df = encodeArr(test_df)
+id = test_df["Id"]
+test_x = test_df.drop("Id", axis=1)
 
-#Train data at all_data[0], Test at all_data[1],
-#train_y at all_data[2], test_ID at all_data[3]
-train_x = all_data[0]
-test_x = all_data[1]
-train_y = all_data[2]
-test_ID = all_data[3]
+##########################################################################################
+
+
+
+
+
 
 
 ########################################################################################
 #####################################Applying ML Algo###################################
 
 
-################## apply Linear Regression #####################
-y_prediction = lA.apply_linear_regression(train_x, train_y, test_x)
-createSubmission(y_prediction, home_dir, id, 'submission_linear_regression.csv')
+predictions = []
+titles = []
 
-submitD = True
-message = "test submission linear regression"
-submit(submitD, message, home_dir)
-####################################################################################
 
-################## apply MLP Regression #####################
+################## apply Linear Regression: #####################
 y_prediction = nA.apply_MLPRegressor(train_x, train_y, test_x)
-createSubmission(y_prediction, home_dir, id, 'submission_mlp_regression.csv')
+createSubmission(y_prediction, home_dir, id)
+
 
 submitD = True
-message = "test submission multi layer perceptron regression"
+message = "test submission linear Regression"
 submit(submitD, message, home_dir)
+
+
 ####################################################################################
 
-################## apply Stacked Linear Regression #####################
-y_prediction = sA.apply_stacked_regression(train_x, train_y, test_x)
-createSubmission(y_prediction, home_dir, id, 'submission_stacked_regression.csv')
+################## apply MLP: #####################
+y_prediction = nA.apply_MLPRegressor(train_x, train_y, test_x)
+createSubmission(y_prediction, home_dir, id)
+
 
 submitD = True
-message = "test submission stacked linear regression"
+message = "test submission MultiLayer Perceptron"
 submit(submitD, message, home_dir)
+
+
 ####################################################################################
+
