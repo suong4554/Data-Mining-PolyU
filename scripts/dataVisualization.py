@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import norm
 from scipy import stats
 
-home_dir = os.path.dirname(os.path.realpath(__file__)).replace('scripts2', '')
+home_dir = os.path.dirname(os.path.realpath(__file__)).replace('scripts', '')
 df_train = pd.read_csv(home_dir + '\\data\\train.csv')
 df_test = pd.read_csv(home_dir + '\\data\\test.csv')
 

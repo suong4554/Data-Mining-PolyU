@@ -128,7 +128,7 @@ def process_data(train, test):
     df = pd.concat((train, test)).reset_index(drop=True)
 
     df = cleanupEmptyValues(df)
-    df = combineDropFeatures(df)
+    #df = combineDropFeatures(df)
     df = normalizeFeatures(df)
     df = numericToCategory(df)
 
